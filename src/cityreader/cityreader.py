@@ -1,5 +1,16 @@
 # Create a class to hold a city location. Call the class "City". It should have
 # fields for name, lat and lon (representing latitude and longitude).
+import csv
+
+class City(object):
+
+    def __init__(self, name, lat, lon):
+        self.name = name
+        self.lat = lat
+        self.lon = lon
+
+    def __str__(self):
+      return f"City: lat {self.lat}, lon {self.lon}, name {self.name}."
 
 
 # We have a collection of US cities with population over 750,000 stored in the
@@ -11,7 +22,7 @@
 # Google "python 3 csv" for references and use your Google-fu for other examples.
 #
 # Store the instances in the "cities" list, below.
-#
+
 # Note that the first line of the CSV is header that describes the fields--this
 # should not be loaded into a City object.
 cities = []
@@ -20,14 +31,23 @@ def cityreader(cities=[]):
   # TODO Implement the functionality to read from the 'cities.csv' file
   # For each city record, create a new City instance and add it to the 
   # `cities` list
-    
-    return cities
+  with open('cities.csv') as csvFile:
+    reader = csv.reader(csvFile, delimiter=',')
+    firstRow = True
+    for row in reader:
+      if(not firstRow):
+        cities.append(City(row[0], float(row[3]), float(row[4])))
+      else:
+        firstRow = False
+  return cities
 
 cityreader(cities)
 
 # Print the list of cities (name, lat, lon), 1 record per line.
 for c in cities:
     print(c)
+
+print("\n")
 
 # STRETCH GOAL!
 #
@@ -64,8 +84,33 @@ def cityreader_stretch(lat1, lon1, lat2, lon2, cities=[]):
   # within will hold the cities that fall within the specified region
   within = []
 
+  if(lat1 > lat2):
+    temp = lat1
+    lat1 = lat2
+    lat2 = temp
+
+  if(lon1 > lon2):
+    temp = lon1
+    lon1 = lon2
+    lon2 = temp
+
+
   # TODO Ensure that the lat and lon valuse are all floats
   # Go through each city and check to see if it falls within 
   # the specified coordinates.
+  with open('cities.csv') as csvFile:
+    reader = csv.reader(csvFile, delimiter=',')
+    firstRow = True
+    for row in reader:
+      if(not firstRow):
+        if(float(row[3]) >= lat1 and float(row[3]) <= lat2 ):
+          if(float(row[4]) >= lon1 and float(row[4]) <= lon2 ):
+            within.append(City(row[0], float(row[3]), float(row[4])))
+      else:
+        firstRow = False
 
   return within
+
+# Print the list of cities (name, lat, lon), 1 record per line.
+for c in cityreader_stretch(45, -100, 32, -120, cities):
+    print(c)
